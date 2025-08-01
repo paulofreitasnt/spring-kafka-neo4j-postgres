@@ -7,15 +7,15 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-public class Friendship {
+public class Follow {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @ManyToOne
-    private User user1;
+    private User follower;
     @ManyToOne
-    private User user2;
+    private User following;
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
