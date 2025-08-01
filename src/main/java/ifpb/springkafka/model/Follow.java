@@ -13,8 +13,10 @@ public class Follow {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @ManyToOne
+    @JoinColumn(name="follower_id")
     private User follower;
     @ManyToOne
+    @JoinColumn(name="following_id")
     private User following;
     @Column(nullable = false)
     private LocalDateTime createdAt;
