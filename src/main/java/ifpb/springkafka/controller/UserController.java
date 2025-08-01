@@ -1,5 +1,6 @@
 package ifpb.springkafka.controller;
 
+import ifpb.springkafka.dto.UserCreateDto;
 import ifpb.springkafka.dto.UserDto;
 import ifpb.springkafka.model.User;
 import ifpb.springkafka.repository.UserRepository;
@@ -19,7 +20,7 @@ public class UserController {
     private UserRepository userRepository;
 
     @PostMapping
-    public ResponseEntity<UserDto> create(@RequestBody @Valid UserDto userDto) {
+    public ResponseEntity<UserDto> create(@RequestBody @Valid UserCreateDto userDto) {
         if (userRepository.findByEmail(userDto.email()) != null) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
@@ -29,7 +30,7 @@ public class UserController {
         user.setEmail(userDto.email());
         User newUser = userRepository.save(user);
 
-        UserDto responseDto = new UserDto(newUser.getName(), newUser.getEmail());
+        UserDto responseDto = new UserDto(newUser.getId(), newUser.getName(), newUser.getEmail());
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
@@ -39,7 +40,7 @@ public class UserController {
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
-        UserDto userDto = new UserDto(user.getName(), user.getEmail());
+        UserDto userDto = new UserDto(user.getId(), user.getName(), user.getEmail());
         return ResponseEntity.ok(userDto);
     }
 
@@ -49,7 +50,7 @@ public class UserController {
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
-        UserDto userDto = new UserDto(user.getName(), user.getEmail());
+        UserDto userDto = new UserDto(user.getId(), user.getName(), user.getEmail());
         return ResponseEntity.ok(userDto);
     }
 
