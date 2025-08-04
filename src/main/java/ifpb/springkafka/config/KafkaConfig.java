@@ -1,6 +1,6 @@
 package ifpb.springkafka.config;
 
-import ifpb.springkafka.dto.FollowEventDto;
+import ifpb.springkafka.dto.events.FollowEventDto;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.context.annotation.Bean;

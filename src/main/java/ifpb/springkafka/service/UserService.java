@@ -1,7 +1,7 @@
 package ifpb.springkafka.service;
 
 import ifpb.springkafka.dto.UserCreateDto;
-import ifpb.springkafka.dto.FollowEventDto;
+import ifpb.springkafka.dto.events.FollowEventDto;
 import ifpb.springkafka.dto.UserDto;
 import ifpb.springkafka.model.User;
 import ifpb.springkafka.repository.UserRepository;
@@ -33,8 +33,7 @@ public class UserService {
         user.setEmail(userDto.email());
         User newUser = userRepository.save(user);
 
-        // Publica evento de criação de usuário
-        FollowEventDto event = new FollowEventDto(
+        FollowEventDto event = FollowEventDto.create(
                 "CREATE_USER",
                 user.getEmail(),
                 null

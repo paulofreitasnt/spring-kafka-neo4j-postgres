@@ -1,7 +1,7 @@
 package ifpb.springkafka.service;
 
 import ifpb.springkafka.dto.FollowCreateDto;
-import ifpb.springkafka.dto.FollowEventDto;
+import ifpb.springkafka.dto.events.FollowEventDto;
 import ifpb.springkafka.model.Follow;
 import ifpb.springkafka.model.User;
 import ifpb.springkafka.repository.FollowRepository;
@@ -42,7 +42,7 @@ public class FollowService {
         follow.setCreatedAt(LocalDateTime.now());
         Follow newFollow = followRepository.save(follow);
 
-        FollowEventDto event = new FollowEventDto(
+        FollowEventDto event = FollowEventDto.create(
                 "FOLLOW",
                 follower.getEmail(),
                 following.getEmail()
