@@ -36,6 +36,12 @@ public class FollowService {
         if (follower == null || following == null) {
             throw new RuntimeException("User not found");
         }
+
+        boolean exists = followRepository.existsByFollowerAndFollowing(follower, following);
+        if (exists) {
+            throw new RuntimeException("Follow relationship already exists");
+        }
+
         Follow follow = new Follow();
         follow.setFollower(follower);
         follow.setFollowing(following);
