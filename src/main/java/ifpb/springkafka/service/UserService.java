@@ -1,6 +1,7 @@
 package ifpb.springkafka.service;
 
 import ifpb.springkafka.dto.UserCreateDto;
+import ifpb.springkafka.dto.FollowEventDto;
 import ifpb.springkafka.dto.UserDto;
 import ifpb.springkafka.model.User;
 import ifpb.springkafka.repository.UserRepository;
@@ -16,10 +17,12 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-    @Value("${kafka.topic.follows}")
-    private String followTopic;
+
+    @Value("${kafka.topic.follow}")
+    private String followsTopic;
+
     @Autowired
-    private KafkaTemplate<String, UserDto> kafkaTemplate;
+    private KafkaTemplate<String, FollowEventDto> kafkaTemplate;
 
     public Optional<UserDto> create(UserCreateDto userDto) {
         if (userRepository.findByEmail(userDto.email()) != null) {
@@ -30,10 +33,15 @@ public class UserService {
         user.setEmail(userDto.email());
         User newUser = userRepository.save(user);
 
-        UserDto userResult = new UserDto(newUser.getId(), newUser.getName(), newUser.getEmail());
-        kafkaTemplate.send(followTopic, userResult);
+        // Publica evento de criação de usuário
+        FollowEventDto event = new FollowEventDto(
+                "CREATE_USER",
+                user.getEmail(),
+                null
+        );
+        kafkaTemplate.send(followsTopic, event);
 
-        return Optional.of(userResult);
+        return Optional.of(new UserDto(newUser.getId(), newUser.getName(), newUser.getEmail()));
     }
 
     public Optional<UserDto> findById(Long id) {
