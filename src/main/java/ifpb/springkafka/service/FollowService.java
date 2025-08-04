@@ -6,6 +6,8 @@ import ifpb.springkafka.model.User;
 import ifpb.springkafka.repository.FollowRepository;
 import ifpb.springkafka.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,6 +19,10 @@ public class FollowService {
 
     @Autowired
     private FollowRepository followRepository;
+    @Value("${kafka.topic.follow}")
+    private String followTopic;
+    @Autowired
+    private KafkaTemplate<String, Follow> kafkaTemplate;
 
     @Autowired
     private UserRepository userRepository;
@@ -31,6 +37,9 @@ public class FollowService {
         follow.setFollower(follower);
         follow.setFollowing(following);
         follow.setCreatedAt(LocalDateTime.now());
+
+        kafkaTemplate.send(followTopic, follow);
+
         return followRepository.save(follow);
     }
 
