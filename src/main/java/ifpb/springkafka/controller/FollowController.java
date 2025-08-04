@@ -2,41 +2,24 @@ package ifpb.springkafka.controller;
 
 import ifpb.springkafka.dto.FollowCreateDto;
 import ifpb.springkafka.model.Follow;
-import ifpb.springkafka.model.User;
-import ifpb.springkafka.repository.FollowRepository;
-import ifpb.springkafka.repository.UserRepository;
+import ifpb.springkafka.service.FollowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/follows")
 public class FollowController {
 
     @Autowired
-    private FollowRepository followRepository;
-    @Autowired
-    private UserRepository userRepository;
+    private FollowService followService;
 
     @PostMapping
-    public ResponseEntity<FollowCreateDto> create(@RequestBody FollowCreateDto request){
-        User follower = userRepository.findByEmail(request.followerEmail());
-        User following = userRepository.findByEmail(request.followingEmail());
-        if(follower == null || following == null){
-            throw new RuntimeException("User not found");
-        }
-        Follow follow = new Follow();
-        follow.setFollower(follower);
-        follow.setFollowing(following);
-        follow.setCreatedAt(LocalDateTime.now());
-        Follow newFollow = followRepository.save(follow);
+    public ResponseEntity<FollowCreateDto> create(@RequestBody FollowCreateDto request) {
+        Follow follow = followService.create(request);
         FollowCreateDto resultDto =
-                new FollowCreateDto(newFollow.getFollower().getEmail(),
-                        newFollow.getFollowing().getEmail());
+                new FollowCreateDto(follow.getFollower().getEmail(),
+                        follow.getFollowing().getEmail());
         return ResponseEntity.ok(resultDto);
     }
-
 }
