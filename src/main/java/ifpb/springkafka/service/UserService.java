@@ -1,5 +1,7 @@
 package ifpb.springkafka.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ifpb.springkafka.dto.UserCreateDto;
 import ifpb.springkafka.dto.events.FollowEventDto;
 import ifpb.springkafka.dto.UserDto;
@@ -22,7 +24,10 @@ public class UserService {
     private String followsTopic;
 
     @Autowired
-    private KafkaTemplate<String, FollowEventDto> kafkaTemplate;
+    private KafkaTemplate<String, String> kafkaTemplate;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     public Optional<UserDto> create(UserCreateDto userDto) {
         if (userRepository.findByEmail(userDto.email()) != null) {
@@ -38,7 +43,12 @@ public class UserService {
                 user.getEmail(),
                 null
         );
-        kafkaTemplate.send(followsTopic, event);
+        try {
+            String json = objectMapper.writeValueAsString(event);
+            kafkaTemplate.send(followsTopic, json);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         return Optional.of(new UserDto(newUser.getId(), newUser.getName(), newUser.getEmail()));
     }

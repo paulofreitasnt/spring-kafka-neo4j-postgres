@@ -1,5 +1,7 @@
 package ifpb.springkafka.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ifpb.springkafka.dto.FollowCreateDto;
 import ifpb.springkafka.dto.events.FollowEventDto;
 import ifpb.springkafka.model.Follow;
@@ -25,10 +27,13 @@ public class FollowService {
     private String followsTopic;
 
     @Autowired
-    private KafkaTemplate<String, FollowEventDto> kafkaTemplate;
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     public Follow create(FollowCreateDto request) {
         User follower = userRepository.findByEmail(request.followerEmail());
@@ -53,7 +58,13 @@ public class FollowService {
                 follower.getEmail(),
                 following.getEmail()
         );
-        kafkaTemplate.send(followsTopic, event);
+
+        try {
+            String json = objectMapper.writeValueAsString(event);
+            kafkaTemplate.send(followsTopic, json);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         return newFollow;
     }
