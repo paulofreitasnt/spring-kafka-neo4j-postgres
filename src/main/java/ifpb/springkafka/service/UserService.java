@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ifpb.springkafka.dto.UserCreateDto;
 import ifpb.springkafka.dto.events.FollowEventDto;
 import ifpb.springkafka.dto.UserDto;
+import ifpb.springkafka.dto.events.UserCreateEventDto;
 import ifpb.springkafka.model.User;
 import ifpb.springkafka.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +39,7 @@ public class UserService {
         user.setEmail(userDto.email());
         User newUser = userRepository.save(user);
 
-        FollowEventDto event = FollowEventDto.create(
-                "CREATE_USER",
-                user.getEmail(),
-                null
-        );
+        UserCreateEventDto event = UserCreateEventDto.of(user);
         try {
             String json = objectMapper.writeValueAsString(event);
             kafkaTemplate.send(followsTopic, json);
