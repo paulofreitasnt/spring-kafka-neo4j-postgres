@@ -3,7 +3,6 @@ package ifpb.springkafka.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ifpb.springkafka.dto.UserCreateDto;
-import ifpb.springkafka.dto.events.FollowEventDto;
 import ifpb.springkafka.dto.UserDto;
 import ifpb.springkafka.dto.events.UserCreateEventDto;
 import ifpb.springkafka.model.User;
